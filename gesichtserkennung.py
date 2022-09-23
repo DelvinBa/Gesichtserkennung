@@ -18,4 +18,3 @@ while True:
         break
 capture.realease()
 cv2.destroyAllWindows()
-print
