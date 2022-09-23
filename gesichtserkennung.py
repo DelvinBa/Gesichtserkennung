@@ -1,9 +1,11 @@
 import cv2
+import os
 
 capture = cv2.VideoCapture(0)  # steuert die Kamera an
 # Orte wo Gesichter sich befinden
-cascade = cv2.CascadeClassifier(
-    r"C:\Users\jonas\Desktop\haarcascade_frontalface_default.xml")
+current_dir = os.path.dirname(os.path.realpath(__file__))
+classifier_file = os.path.join(current_dir, "haarcascade_frontalface_default.xml")
+cascade = cv2.CascadeClassifier(classifier_file)
 
 while True:
     _, im = capture.read()
