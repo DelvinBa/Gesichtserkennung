@@ -8,18 +8,23 @@
 
 from symbol import for_stmt
 from time import sleep
-from turtle import delay
+import cv2
+import os
 import face_recognition
 import picamera
 import numpy as np
 import json
 import paho.mqtt.client as mqtt
 
+
 client = mqtt.Client()
 client.connect("172.16.2.5", 1883, 60)
 client.publish("securedoor/face", 3)
     
 print("signal geschickt")
+
+        
+
 # Get a reference to the Raspberry Pi camera.
 # If this fails, make sure you have a camera connected to the RPi and that you
 # enabled your camera in raspi-config and rebooted first.
@@ -47,7 +52,6 @@ while True:
     #print("Capturing image.")
     # Grab a single frame of video from the RPi camera as a numpy array
     camera.capture(output, format="rgb")
-    
 
     # Find all the faces and face encodings in the current frame of video
     face_locations = face_recognition.face_locations(output)
@@ -69,9 +73,12 @@ while True:
                 print("     " + faces[i]["name"] + " is authorized: " + str(faces[i]["authorized"]))
                 if(faces[i]["authorized"] == True ) :
                     client.publish("securedoor/face", 1)
+                    sleep(4)
                 else :
                     client.publish("securedoor/face", 2)
+                    sleep(4)
             else :
                 print(name)
                 client.publish("securedoor/face", 0)
+                sleep(4)
 
