@@ -71,11 +71,14 @@ while True:
 
     #print(face_locations)
     print("Found {} faces in image.".format(len(face_locations)))
-    face_encodings = face_recognition.face_encodings(output, face_locations)
-    
-    if len(face_locations) == 0:
+    if len(face_locations) == 0 :
         client.publish("securedoor/face", 3)
-        continue 
+        continue
+
+    face_encodings = face_recognition.face_encodings(output, face_locations)
+
+    authorized_face_detected = False
+    unauthorized_face_detected = False
 
     # Loop over each face found in the frame to see if it's someone we know.
     for face_encoding in face_encodings:
@@ -83,19 +86,21 @@ while True:
         match = face_recognition.compare_faces(allFaces , face_encoding)
         name = "<Unknown Person>"
 
-        authorized_face_detected = False
-        unauthorized_face_detected = False
         for i in range(len(match)): 
             if match[i]:
                 print("     " + faces[i]["name"] + " is authorized: " + str(faces[i]["authorized"]))
                 if(faces[i]["authorized"] == True ) :
                     authorized_face_detected = True
+
                 else:
                     unauthorized_face_detected = True
 
-        if authorized_face_detected == True:
-            client.publish("securedoor/face", 1)
-        elif unauthorized_face_detected == True:
-            client.publish("securedoor/face", 2)
-        else:
-            client.publish("securedoor/face", 0)
+    if authorized_face_detected == True:
+        client.publish("securedoor/face", 1)
+            
+    elif unauthorized_face_detected == True :
+        client.publish("securedoor/face", 2)
+            
+    else:
+        client.publish("securedoor/face", 0)
+            
