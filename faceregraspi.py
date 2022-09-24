@@ -38,6 +38,7 @@ with open("faces.json") as json_file:
     data = json.load(json_file)
     
 faces = data["faces"]
+rectanglecolor = data["rectanglecolor"]
 allFaces = []
 for face in faces: 
     faceImage = face_recognition.load_image_file(face["img"])
@@ -51,10 +52,24 @@ face_encodings = []
 while True:
     #print("Capturing image.")
     # Grab a single frame of video from the RPi camera as a numpy array
-    camera.capture(output, format="rgb")
+    camera.capture(output, format="bgr")
 
     # Find all the faces and face encodings in the current frame of video
     face_locations = face_recognition.face_locations(output)
+
+    for location in face_locations:
+        x = location[0]
+        y = location[1]
+        x2 = location[2]
+        y2 = location[3]
+        cv2.rectangle(output, (y, x), (y2, x2),
+           color=(rectanglecolor["b"],rectanglecolor["g"],rectanglecolor["r"]), thickness=5)
+
+    cv2.imshow("Kamera", output)
+    if cv2.waitKey(1) == ord("q"):
+        break
+
+    print(face_locations)
     print("Found {} faces in image.".format(len(face_locations)))
     face_encodings = face_recognition.face_encodings(output, face_locations)
     
@@ -73,12 +88,12 @@ while True:
                 print("     " + faces[i]["name"] + " is authorized: " + str(faces[i]["authorized"]))
                 if(faces[i]["authorized"] == True ) :
                     client.publish("securedoor/face", 1)
-                    sleep(4)
+                    #sleep(4)
                 else :
                     client.publish("securedoor/face", 2)
-                    sleep(4)
+                    #sleep(4)
             else :
                 print(name)
                 client.publish("securedoor/face", 0)
-                sleep(4)
+                #sleep(4)
 

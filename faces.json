@@ -16,5 +16,9 @@
             "img": "/home/py/person/tobiM.jpg"
         }
     ],
-    "RectangleColor": "red"
+    "rectanglecolor": {
+        "r": 255,
+        "g": 0,
+        "b": 0
+    }
 }
