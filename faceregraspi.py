@@ -69,7 +69,7 @@ while True:
     if cv2.waitKey(1) == ord("q"):
         break
 
-    print(face_locations)
+    #print(face_locations)
     print("Found {} faces in image.".format(len(face_locations)))
     face_encodings = face_recognition.face_encodings(output, face_locations)
     
@@ -83,17 +83,19 @@ while True:
         match = face_recognition.compare_faces(allFaces , face_encoding)
         name = "<Unknown Person>"
 
+        authorized_face_detected = False
+        unauthorized_face_detected = False
         for i in range(len(match)): 
             if match[i]:
                 print("     " + faces[i]["name"] + " is authorized: " + str(faces[i]["authorized"]))
                 if(faces[i]["authorized"] == True ) :
-                    client.publish("securedoor/face", 1)
-                    #sleep(4)
-                else :
-                    client.publish("securedoor/face", 2)
-                    #sleep(4)
-            else :
-                print(name)
-                client.publish("securedoor/face", 0)
-                #sleep(4)
+                    authorized_face_detected = True
+                else:
+                    unauthorized_face_detected = True
 
+        if authorized_face_detected == True:
+            client.publish("securedoor/face", 1)
+        elif unauthorized_face_detected == True:
+            client.publish("securedoor/face", 2)
+        else:
+            client.publish("securedoor/face", 0)
