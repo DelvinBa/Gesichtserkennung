@@ -65,10 +65,6 @@ while True:
         cv2.rectangle(output, (y, x), (y2, x2),
            color=(rectanglecolor["b"],rectanglecolor["g"],rectanglecolor["r"]), thickness=5)
 
-    cv2.imshow("Kamera", output)
-    if cv2.waitKey(1) == ord("q"):
-        break
-
     #print(face_locations)
     print("Found {} faces in image.".format(len(face_locations)))
     if len(face_locations) == 0 :
@@ -88,12 +84,26 @@ while True:
 
         for i in range(len(match)): 
             if match[i]:
+                cv2.putText(output,
+                    faces[i]["name"],
+                    (face_locations[i][3], face_locations[i][0]),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    1, 
+                    (rectanglecolor["b"],rectanglecolor["g"],rectanglecolor["r"]),
+                    5,
+                    2)
+
+
                 print("     " + faces[i]["name"] + " is authorized: " + str(faces[i]["authorized"]))
                 if(faces[i]["authorized"] == True ) :
                     authorized_face_detected = True
 
                 else:
                     unauthorized_face_detected = True
+
+    cv2.imshow("Kamera", output)
+    if cv2.waitKey(1) == ord("q"):
+        break
 
     if authorized_face_detected == True:
         client.publish("securedoor/face", 1)
