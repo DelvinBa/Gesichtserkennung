@@ -1,0 +1,20 @@
+{
+    "faces": [
+        {
+            "name": "delvin",
+            "authorized": false,
+            "img": "/home/py/person/delvin.jpg"
+        },
+        {
+            "name": "tobi",
+            "authorized": true,
+            "img": "/home/py/person/tobi.jpg"
+        },
+        {
+            "name": "Mentor Tobi",
+            "authorized": true,
+            "img": "/home/py/person/tobiM.jpg"
+        }
+    ],
+    "RectangleColor": "red"
+}
