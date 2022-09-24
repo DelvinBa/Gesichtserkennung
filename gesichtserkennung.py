@@ -1,11 +1,14 @@
+import face_recognition
 import cv2
+import numpy as np
 import os
+import glob
 
 
 from dataclasses import dataclass
 @dataclass
 class Person:
-    x = int = 0
+    x: int = 0
     y: int = 0
     width: int = 0
     height: int = 0
