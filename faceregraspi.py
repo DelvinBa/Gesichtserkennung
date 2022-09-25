@@ -49,6 +49,9 @@ print("loading faces DONE")
 face_locations = []
 face_encodings = []
 
+cv2.namedWindow("Kamera", cv2.WINDOW_NORMAL)
+cv2.resizeWindow("Kamera", 800, 600)
+
 while True:
     #print("Capturing image.")
     # Grab a single frame of video from the RPi camera as a numpy array
@@ -63,13 +66,10 @@ while True:
         x2 = location[2]
         y2 = location[3]
         cv2.rectangle(output, (y, x), (y2, x2),
-           color=(rectanglecolor["b"],rectanglecolor["g"],rectanglecolor["r"]), thickness=5)
+           color=(rectanglecolor["b"],rectanglecolor["g"],rectanglecolor["r"]), thickness=2)
 
     #print(face_locations)
     print("Found {} faces in image.".format(len(face_locations)))
-    if len(face_locations) == 0 :
-        client.publish("securedoor/face", 3)
-        continue
 
     face_encodings = face_recognition.face_encodings(output, face_locations)
 
@@ -77,22 +77,24 @@ while True:
     unauthorized_face_detected = False
 
     # Loop over each face found in the frame to see if it's someone we know.
-    for face_encoding in face_encodings:
+    for face_idx, face_encoding in enumerate(face_encodings):
         # See if the face is a match for the known face(s)
         match = face_recognition.compare_faces(allFaces , face_encoding)
-        name = "<Unknown Person>"
+
+        print(match)
 
         for i in range(len(match)): 
             if match[i]:
+                print(face_locations)
+                print(i)
                 cv2.putText(output,
                     faces[i]["name"],
-                    (face_locations[i][3], face_locations[i][0]),
+                    (face_locations[face_idx][3], face_locations[face_idx][0] - 5),
                     cv2.FONT_HERSHEY_SIMPLEX,
-                    1, 
+                    0.5, 
                     (rectanglecolor["b"],rectanglecolor["g"],rectanglecolor["r"]),
-                    5,
-                    2)
-
+                    2,
+                    1)
 
                 print("     " + faces[i]["name"] + " is authorized: " + str(faces[i]["authorized"]))
                 if(faces[i]["authorized"] == True ) :
@@ -104,6 +106,10 @@ while True:
     cv2.imshow("Kamera", output)
     if cv2.waitKey(1) == ord("q"):
         break
+
+    if len(face_locations) == 0 :
+        client.publish("securedoor/face", 3)
+        continue
 
     if authorized_face_detected == True:
         client.publish("securedoor/face", 1)
